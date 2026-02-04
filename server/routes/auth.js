@@ -5,9 +5,7 @@ import User from "../models/User.js";
 
 const router = express.Router();
 
-/* ======================
-   REGISTER
-====================== */
+/* REGISTER */
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -22,19 +20,16 @@ router.post("/register", async (req, res) => {
     }
 
     const hashed = await bcrypt.hash(password, 10);
-    await User.create({ name, email, password: hashed });
+    const user = new User({ name, email, password: hashed });
+    await user.save();
 
     res.json({ message: "Registered successfully" });
-
   } catch (err) {
-    console.error("Register error:", err);
     res.status(500).json({ message: "Server error" });
   }
 });
 
-/* ======================
-   LOGIN
-====================== */
+/* LOGIN */
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -54,15 +49,17 @@ router.post("/login", async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user._id, name: user.name, email: user.email },
+      { id: user._id },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
 
-    res.json({ token });
+    res.json({
+      message: "Login successful",
+      token
+    });
 
-  } catch (err) {
-    console.error("Login error:", err);
+  } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
 });
