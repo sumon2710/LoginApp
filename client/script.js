@@ -17,7 +17,7 @@ async function register() {
     alert("Registered successfully!");
     window.location = "index.html";
   } else {
-    alert(data.error);
+    alert(data.error || "Something went wrong");
   }
 }
 
@@ -37,6 +37,6 @@ async function login() {
     localStorage.setItem("user", JSON.stringify(data.user));
     window.location = "profile.html";
   } else {
-    alert(data.error);
+   alert(data.error || "Something went wrong");
   }
 }
