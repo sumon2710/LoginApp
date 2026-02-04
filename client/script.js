@@ -18,36 +18,50 @@ async function register() {
 
     const data = await res.json();
 
-    if (!res.ok) {
-      alert(data.message || "Registration failed");
-      return;
-    }
+    alert(data.message || "Registered");
 
-    alert(data.message);
-    window.location.href = "index.html"; // go to login
+    if (res.ok) {
+      window.location.href = "index.html";
+    }
 
   } catch (err) {
     alert("Server not reachable");
-    console.error(err);
   }
 }
+
 
 // Login
 async function login() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  const res = await fetch(`${API}/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password })
-  });
+  try {
+    const res = await fetch(
+      "https://loginapp-j9j7.onrender.com/api/auth/login",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      }
+    );
 
-  const data = await res.json();
-  if (data.success) {
-    localStorage.setItem("user", JSON.stringify(data.user));
-    window.location = "profile.html";
-  } else {
-   alert(data.error || "Something went wrong");
+    const data = await res.json();
+
+    // ❌ Error case
+    if (!res.ok) {
+      alert(data.message || "Login failed");
+      return;
+    }
+
+    // ✅ Success case
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+      alert("Login successful");
+      window.location.href = "profile.html";
+    }
+
+  } catch (err) {
+    alert("Server not reachable");
+    console.error(err);
   }
 }
